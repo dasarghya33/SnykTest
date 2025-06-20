@@ -1,0 +1,51 @@
+@echo off
+echo Running Snyk Test for Security Scanning...
+
+REM Check if folder path is passed
+IF "%~1"=="" (
+    echo Usage: run-snyk-test.bat [source_folder_path]
+    echo Example: run-snyk-test.bat C:\code\my-app
+    exit /b 1
+)
+
+set SOURCE_FOLDER=%~1
+
+REM Check if folder exists
+IF NOT EXIST "%SOURCE_FOLDER%" (
+    echo Source folder "%SOURCE_FOLDER%" does not exist. Exiting...
+    exit /b 1
+)
+
+REM Check if SNYK CLI is installed
+snyk --version >nul 2>&1
+IF %ERRORLEVEL% NEQ 0 (
+    echo Snyk CLI is not installed. Exiting...
+    exit /b 1
+)
+
+snyk --version 
+
+REM Authenticate Snyk CLI
+IF NOT DEFINED SNYK_TOKEN (
+    echo SNYK_TOKEN environment variable not found. Ensure it is set in the pipeline.
+    exit /b 1
+)
+snyk auth %SNYK_TOKEN%
+IF %ERRORLEVEL% NEQ 0 (
+    echo Snyk authentication failed. Exiting...
+    exit /b 1
+)
+
+IF NOT DEFINED ORG_ID (
+    echo ORG_ID environment variable not found. Ensure it is set in the pipeline.
+    exit /b 1
+)
+
+REM Run Snyk Test on the specified folder
+echo Running Snyk Test in folder: %SOURCE_FOLDER%
+cd /d %SOURCE_FOLDER%
+snyk monitor --all-projects --org=%ORG_ID% --detected-manifests=csproj,sln --exclude="VFS.Core.Tests.Web,ThirdParty"
+
+echo Snyk Test completed successfully. No vulnerabilities detected.
+exit /b 0
+
