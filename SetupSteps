@@ -1,0 +1,36 @@
+✅ Installation & Configuration
+Snyk CLI Installation:
+
+
+
+bash
+curl https://static.snyk.io/cli/latest/snyk-win.exe -o snyk.exe 
+Configuration:
+
+
+
+bash
+snyk config set endpoint=https://api.us.snyk.io 
+Authentication:
+
+
+
+bash
+snyk auth 
+This opens a browser window to log in and authenticate the machine. No repository permissions are required at this stage.
+
+📁 Project Navigation & Scan Execution
+Command used to initiate scan:
+
+
+
+bash
+snyk test --all-projects --org=7e915bed-d6df-44ce-964f-3c862450a7 
+Successfully navigated to the target project folder and executed the scan.
+
+Additional Notes
+A dedicated folder C:\Snyk was created to host the scan script and Snyk CLI executable.
+
+Environment variables were configured to ensure seamless execution in CI/CD pipelines.
+
+Exclusions like "VFS.Core.Tests.Web" were applied to ignore test projects during scans.
